@@ -1,0 +1,19 @@
+@font-face { font-family: basis; src: url('basis33.ttf'); }
+
+@keyframes blinkCursor {
+  0%  { border-right-color: rgba(255, 255, 255, .75); }
+  49% { border-right-color: rgba(255, 255, 255, .75); }
+  50% { border-right-color: transparent; }
+  100% { border-right-color: transparent; }
+}
+
+.cursor {
+  border-right: 2px solid rgba(255,255,255,.75);
+  animation: blinkCursor 600ms infinite normal;
+}
+
+body {
+  font-family: basis;
+  color: white;
+  background: black;
+}
