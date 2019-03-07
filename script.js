@@ -145,6 +145,10 @@ function add_to_inv(item) {
   }
 
   if (item in position.children) {
+    if(position.children[item].type === Types.Dir) {
+      console.log("It is a directory");
+      return;
+    }
     inv.add_child(position.children[item]);
     position.remove_child(item);
     inv_length++;
