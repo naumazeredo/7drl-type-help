@@ -15,6 +15,12 @@
   - [x] Tree structure
   - [x] Movement
   - [ ] Procedural generation
+  - [ ] Locked rooms
+- [ ] Inventory system
+  - [ ] Itens limits
+  - [ ] Hold item
+  - [ ] Dispose items
+  - [ ] List items
 
 - [ ] Idea
   - [ ] Fighting: something to react (typing race? simple puzzle solving? maze

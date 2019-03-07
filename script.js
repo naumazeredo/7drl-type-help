@@ -2,26 +2,29 @@
 
 const Types = Object.freeze({
   Dir: 1,
-  File: 2
+  File: 2,
+  Inv: 3
 });
 
 class Node {
   constructor(name, type = null) {
     this.name = name;
     this.parent = null;
-    this.children = [];
-    this.type = type; //["dir", "file"]
+    this.children = {};
+    this.type = type;
     this.is_known = false;
     this.depth = 0;
   }
 
-  add_children(node_list) {
-    for (let node of node_list) {
-      node.parent = this;
-      node.depth = this.depth + 1;
-    }
+  add_child(node) {
+    this.children[node.name] = node;
+    node.parent = this;
+    node.depth = this.depth + 1;
+  }
 
-    this.children.push(...node_list);
+  remove_child(node) {
+    if(typeof(node) === 'string') delete this.children[node];
+    else delete this.children[node.name];
   }
 }
 
@@ -31,24 +34,28 @@ class Tree {
   }
 }
 
-let nodes = [];
+let rooms = [];
+let items = [];
 let position;
+let inv = new Node("inv", Types.Inv);
+let inv_length = 0;
+let inv_max = 7;
 
-//nodes.push(new Node("node 0"));
-//nodes.push(new Node("node 1"));
-//nodes.push(new Node("node 2"));
-
-//nodes[0].add_children([ nodes[1], nodes[2] ]);
-
-function generate_random_tree(rooms = 20) {
-  for(let i = 0; i < rooms; i++) {
-    nodes.push(new Node("room_" + i, Types.Dir));
+function generate_random_tree(n_rooms = 30, n_items = 50) {
+  for(let i = 0; i < n_rooms; i++) {
+    rooms.push(new Node("room_" + i, Types.Dir));
   }
-  for(let i = 1; i < rooms; i++) {
+  for(let i = 1; i < n_rooms; i++) {
     let parent = Math.floor(Math.random()*i);
-    nodes[parent].add_children([nodes[i]]);
+    rooms[parent].add_child(rooms[i]);
   }
-  nodes[0].name = "";
+  rooms[0].name = "";
+
+  for(let i = 0; i < n_items; i++) {
+    items.push(new Node("item_" + i, Types.File));
+    let parent = Math.floor(Math.random()*n_rooms);
+    rooms[parent].add_child(items[i]);
+  }
 }
 
 function choose_pos(node) {
@@ -65,8 +72,8 @@ function change_dir(dest = ".") {
   if(dest.localeCompare("..") === 0 && position.parent != null) {
     return choose_pos(position.parent);
   }
-  for(let i of position.children) if(i.name.localeCompare(dest) === 0) {
-    return choose_pos(i);
+  if(dest in position.children) {
+    return choose_pos(position.children[dest]);
   }
   return position;
 }
@@ -88,10 +95,10 @@ function show_dir(node = null) {
 function list_sub(node = null) {
   if(node == null) node = position;
 
-  var ans = ". ";
-  if(node.parent != null) ans += ".. ";
-  for(let i of node.children) {
-    ans += i.name + " ";
+  var ans = ".";
+  if(node.parent != null) ans += " ..";
+  for(let i in node.children) if(node.children.hasOwnProperty(i)) {
+    ans += " " + i;
   }
   return ans;
 }
@@ -104,13 +111,13 @@ function show_map_dfs(node, min_depth) {
     ans += node.name;
     if(node.name.localeCompare("") === 0) ans += "/";
 
-    if(node.is_known === false) ans += "(?)";
+    if(node.is_known === false && node.type === Types.Dir) ans += "(?)";
 
     ans += "\n";
   }
 
-  for(let v of node.children) {
-    ans += show_map_dfs(v, min_depth);
+  for(let v in node.children) {
+    ans += show_map_dfs(node.children[v], min_depth);
   }
 
   return ans;
@@ -118,21 +125,49 @@ function show_map_dfs(node, min_depth) {
 
 function show_map() {
   let min_depth = position.depth;
-  for(let i of nodes) if(i.is_known === true) {
+  for(let i of rooms) if(i.is_known === true) {
     min_depth = Math.min(i.depth, min_depth);
   }
 
-  return show_map_dfs(nodes[0], min_depth);
+  return show_map_dfs(rooms[0], min_depth);
 }
 
-generate_random_tree(30);
+function show_inv() {
+  ans = "";
+  for(let v in inv.children) ans += v + " ";
+  return ans;
+}
 
-choose_pos(nodes[0]);
+function add_to_inv(item) {
+  if(inv_length >= inv_max) {
+    console.log("Your inventory is full");
+    return;
+  }
+
+  if (item in position.children) {
+    inv.add_child(position.children[item]);
+    position.remove_child(item);
+    inv_length++;
+  }
+  else {
+    console.log("It is not here");
+  }
+}
+
+function remove_from_inv(item) {
+  if (item in inv.children) {
+    position.add_child(inv.children[item]);
+    inv.remove_child(item);
+    inv_length--;
+  }
+  else {
+    console.log("It is not yours");
+  }
+}
+
+generate_random_tree(3, 10);
+
+choose_pos(rooms[0]);
 
 console.log(position);
 
-/*
-for (let node of nodes) {
-  console.log(node);
-}
-*/
