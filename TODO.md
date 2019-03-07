@@ -12,7 +12,8 @@
   - [ ] cd
   - [ ] ls
 - [ ] Directories structures
-  - [ ] Tree structure
+  - [x] Tree structure
+  - [x] Movement
   - [ ] Procedural generation
 
 - [ ] Idea

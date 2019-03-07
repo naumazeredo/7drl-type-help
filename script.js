@@ -1,15 +1,16 @@
 // jshint esversion:6
 
-function min(a, b) {
-  return a<b? a: b;
-}
+const Types = Object.freeze({
+  Dir: 1,
+  File: 2
+});
 
 class Node {
-  constructor(name, parent = null, children = [], type = null) {
+  constructor(name, type = null) {
     this.name = name;
-    this.parent = parent;
-    this.children = children;
-    this.type = type;
+    this.parent = null;
+    this.children = [];
+    this.type = type; //["dir", "file"]
     this.is_known = false;
     this.depth = 0;
   }
@@ -41,7 +42,7 @@ let position;
 
 function generate_random_tree(rooms = 20) {
   for(let i = 0; i < rooms; i++) {
-    nodes.push(new Node("room_" + i));
+    nodes.push(new Node("room_" + i, Types.Dir));
   }
   for(let i = 1; i < rooms; i++) {
     let parent = Math.floor(Math.random()*i);
@@ -51,6 +52,10 @@ function generate_random_tree(rooms = 20) {
 }
 
 function choose_pos(node) {
+  if(node.type != Types.Dir) {
+    console.log("it is not a directory");
+    return position;
+  }
   position = node;
   position.is_known = true;
   return position;
@@ -99,7 +104,7 @@ function show_map_dfs(node, min_depth) {
     ans += node.name;
     if(node.name.localeCompare("") === 0) ans += "/";
 
-    if(node.is_known === false) ans += " (?)";
+    if(node.is_known === false) ans += "(?)";
 
     ans += "\n";
   }
@@ -114,7 +119,7 @@ function show_map_dfs(node, min_depth) {
 function show_map() {
   let min_depth = position.depth;
   for(let i of nodes) if(i.is_known === true) {
-    min_depth = min(i.depth, min_depth);
+    min_depth = Math.min(i.depth, min_depth);
   }
 
   return show_map_dfs(nodes[0], min_depth);
