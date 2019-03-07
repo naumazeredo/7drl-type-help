@@ -1,5 +1,16 @@
 @font-face { font-family: basis; src: url('basis33.ttf'); }
 
+body {
+  font-family: basis;
+  color: white;
+  background: black;
+  margin: 12px;
+}
+
+#inputline {
+  white-space: pre;
+}
+
 @keyframes blinkCursor {
   0%  { border-right-color: rgba(255, 255, 255, .75); }
   49% { border-right-color: rgba(255, 255, 255, .75); }
@@ -7,13 +18,17 @@
   100% { border-right-color: transparent; }
 }
 
-.cursor {
-  border-right: 2px solid rgba(255,255,255,.75);
-  animation: blinkCursor 600ms infinite normal;
+#inputline .cursor {
+  position: relative;
+  width: 0;
+  height: 0;
 }
 
-body {
-  font-family: basis;
-  color: white;
-  background: black;
+#inputline .cursor span {
+  border-right: 2px solid rgba(255,255,255,.75);
+  animation: blinkCursor 1000ms infinite normal;
+  position: absolute;
+  left: 0;
+  height: 100%;
 }
+
