@@ -11,6 +11,10 @@ body {
   white-space: pre;
 }
 
+#past {
+  white-space: pre;
+}
+
 @keyframes blinkCursor {
   0%  { border-right-color: rgba(255, 255, 255, .75); }
   49% { border-right-color: rgba(255, 255, 255, .75); }
