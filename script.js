@@ -93,7 +93,7 @@ function show_dir(node = null) {
 }
 
 function list_sub(node = null) {
-  if(node == null) node = position;
+  if (node == null) node = position;
 
   var ans = ".";
   if(node.parent != null) ans += " ..";
@@ -107,9 +107,9 @@ function show_map_dfs(node, min_depth) {
   let ans = "";
 
   if(node.is_known === true || (node.parent != null && node.parent.is_known === true)) {
-    for(let i = 0; i < node.depth-min_depth; i++) ans += "|   ";
+    for(let i = 0; i < node.depth-min_depth; i++) ans += "| ";
     ans += node.name;
-    if(node.name.localeCompare("") === 0) ans += "/";
+    if(node.name === "") ans += "/";
 
     if(node.is_known === false && node.type === Types.Dir) ans += "(?)";
 
@@ -133,29 +133,28 @@ function show_map() {
 }
 
 function show_inv() {
-  ans = "";
-  for(let v in inv.children) ans += v + " ";
+  ans = "(" + inv_length + "/" + inv_max + "):";
+  for(let v in inv.children) ans += " " + v;
+  if (inv_length == 0) ans += " (nothing)";
   return ans;
 }
 
 function add_to_inv(item) {
   if(inv_length >= inv_max) {
-    console.log("Your inventory is full");
-    return;
+    return "Inventory is full";
   }
 
   if (item in position.children) {
     if(position.children[item].type === Types.Dir) {
-      console.log("It is a directory");
-      return;
+      return item + " is not and item!";
     }
     inv.add_child(position.children[item]);
     position.remove_child(item);
     inv_length++;
+    return item + " added to inventory!";
   }
-  else {
-    console.log("It is not here");
-  }
+
+  return item + " is not here!";
 }
 
 function remove_from_inv(item) {
@@ -163,10 +162,9 @@ function remove_from_inv(item) {
     position.add_child(inv.children[item]);
     inv.remove_child(item);
     inv_length--;
+    return item + " was thrown to the ground!";
   }
-  else {
-    console.log("It is not yours");
-  }
+  return item + " is not in inventory!";
 }
 
 generate_random_tree(3, 10);

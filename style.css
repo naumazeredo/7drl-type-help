@@ -9,6 +9,7 @@ body {
 
 #inputline {
   white-space: pre;
+  overflow-x: hidden;
 }
 
 #past {
@@ -36,3 +37,6 @@ body {
   height: 100%;
 }
 
+#PSR {
+  float: right;
+}
